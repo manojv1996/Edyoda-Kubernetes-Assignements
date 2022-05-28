@@ -1,0 +1,3 @@
+Updates can be rolled by using below command
+kubectl set image deployment kubia nodejs=luksa/kubia:v2
+The version of the app after rolling the update is kubia:v2 in the above case
