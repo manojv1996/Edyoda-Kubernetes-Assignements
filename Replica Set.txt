@@ -1,0 +1,5 @@
+A daemon set is commonly used where each node in a cluster has to run a copy of pod.
+In replica set this cannot be achieved always as the scheduler manages where the instance needs to be run
+and there is no guarantee that a copy is run in all nodes.
+
+Some common applications such as logging or some node monitoring operations can be achieved using daemon sets

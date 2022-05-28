@@ -1,0 +1,55 @@
+1)Create required Deployments,Services and Pods
+
+[root@ip-172-31-18-110 k8s-specifications]# kubectl apply -f .
+deployment.apps/db created
+service/db created
+deployment.apps/redis created
+service/redis created
+deployment.apps/result created
+service/result created
+deployment.apps/vote created
+service/vote created
+deployment.apps/worker created
+
+2)Verify the pods running
+[root@ip-172-31-18-110 k8s-specifications]# kubectl  get po
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-69cgj        1/1     Running   0          86s
+redis-868d64d78-cfn44     1/1     Running   0          86s
+result-5d57b59f4b-lxjw8   1/1     Running   0          86s
+vote-94849dc97-wrjng      1/1     Running   0          85s
+worker-dd46d7584-xcsml    1/1     Running   0          85s
+
+3)Check the Ports details of result and vote app .
+[root@ip-172-31-18-110 k8s-specifications]# kubectl  get svc
+NAME     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+db       ClusterIP   10.108.218.236   <none>        5432/TCP         2m43s
+redis    ClusterIP   10.100.152.113   <none>        6379/TCP         2m43s
+result   NodePort    10.102.151.11    <none>        5001:31001/TCP   2m42s
+vote     NodePort    10.105.28.66     <none>        5000:31000/TCP   2m42s
+
+4) Use public Ip and Node port to view the vote and result app in web client(browser)
+
+5)Deleting voting  or worker pod does not bring the application down as replica set is configured which immediately brings up the
+respective pods and no or minimal impact is seen on the app.
+
+6)Delete the Pod running the DB configurations
+kubectl delete po db-b54cd94f4-69cgj
+
+7)We can see that worker pod is restarted when DB pod is down.
+worker-dd46d7584-nxjjv    1/1     Running       1          3m39s
+[root@ip-172-31-18-110 k8s-specifications]# kubectl  get po
+NAME                      READY   STATUS        RESTARTS   AGE
+db-b54cd94f4-k9fd9        0/1     Terminating   0          13m
+db-b54cd94f4-kt9tq        1/1     Running       0          41s
+redis-868d64d78-cfn44     1/1     Running       0          20m
+result-5d57b59f4b-pjhbb   1/1     Running       0          8m9s
+vote-94849dc97-jbvw6      1/1     Running       0          6m54s
+worker-dd46d7584-nxjjv    1/1     Running       1          3m42s
+
+8)The result app will not work once the DB pod is down as in the current code
+the socket connection in the result app to the DB side is synchronous and 
+requires restarting the result pod also. Upon restart the result and vote apps work properly.
+
+Either the application should be handled in such scenarios or this might impact other pods (result app here)
+
