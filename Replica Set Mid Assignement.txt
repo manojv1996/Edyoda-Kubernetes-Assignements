@@ -1,0 +1,17 @@
+The kind is ReplicationController for kubia-rc.yaml and ReplicaSet for kubia-replicaset.yaml
+
+After running the ReplicaSet below command gives the details of the replicas running in the ReplicaSet
+[root@ip-172-31-18-110 05-services]# kubectl get rs
+NAME    DESIRED   CURRENT   READY   AGE
+kubia   3         3         3       10s
+
+After running kubia-svc.yaml a pod running kubia app is picked
+[root@ip-172-31-18-110 05-services]#  curl 10.99.10.99:80
+You've hit kubia-ct6t7
+
+Change label of pod kubia-ct67
+kubectl label --overwrite po  kubia-ct6t7 app=kubia3
+
+After changing the label another pod will be spanned by the ReplicaSet and since label does not match
+service will not run on this pod 
+
